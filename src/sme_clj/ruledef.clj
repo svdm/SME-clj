@@ -1,7 +1,8 @@
 
-(ns mmm.sm.ruledef
-  "Structure mapping matching rule definitions."
-  (:use mmm.sm.typedef))
+(ns sme-clj.ruledef
+  "Structure mapping matching rule definitions. Contains both basic literal
+   similarity rules and macros for defining new rulesets."
+  (:use sme-clj.typedef))
 
 ;;; Rule definition helpers
 (defmacro rule
@@ -26,7 +27,7 @@
                      :filter []}
                     ~@rules)))
 
-;; As in SME
+;; As in SME, basic analogical matching rules, direct port
 (defrules literal-similarity
   (rule same-functor :filter
         (when (= (expression-functor base) (expression-functor target))
