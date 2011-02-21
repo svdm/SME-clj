@@ -321,6 +321,9 @@
 
 ;; Note that the behaviour of the original SME that concerns the creation of
 ;; "skolem" entities when transfering inferences is not implemented.
+;;
+;; Inference generation in general was not as relevant in the original purpose
+;; of this implementation, hence it is less tested etc.
 
 (defn transfer-gmap-inferences
   "Attempt to transfer inferences to the target of the gmap."
@@ -374,9 +377,8 @@
          combine-gmaps
          merge-gmaps
          (finalize-gmaps base target)
-         ;; Inference generation is not used in the model at this time.
-         ;;(generate-inferences base)
-         ;;transfer-inferences
+         (generate-inferences base)
+         transfer-inferences
          ))
   ([base target]
      (match base target literal-similarity)))
