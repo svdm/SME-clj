@@ -260,7 +260,7 @@
 
 ;; Entities may have keys that are implementation details. Bind this var to a
 ;; seq of those keys to ignore them in emap matching.
-(def unmatched-keys [:shape])
+(def unmatched-keys nil)
 
 (defn matching-emaps
   "Returns seq of MHs that are emaps of which the entities are equal."
