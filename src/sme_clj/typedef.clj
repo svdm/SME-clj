@@ -2,7 +2,7 @@
 (ns sme-clj.typedef
   "Data type definitions and protocols for SME, as well as facilities to create
    instances of types and manipulate them."
-  (:use [sme-clj.util :only [defmake]]))
+  (:use [sme-clj.util :only [defmake is-type?]]))
 
 ;;; ENTITY AND PREDICATE
 
@@ -41,8 +41,6 @@
   ADisplayableNode
   (title-for-node [this]
     (clojure.core/name name)))
-
-(defmacro is-type? [x t] `(isa? (type ~x) ~t)) ;; TODO: move into util.clj
 
 (defn predicate? [x] (is-type? x Predicate))
 

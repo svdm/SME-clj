@@ -14,3 +14,6 @@
   `(defn ~(symbol (.concat "make-" (classname recname)))
      [~@fields]
      (new ~recname ~@fields)))
+
+
+(defmacro is-type? [x t] `(isa? (type ~x) ~t))
