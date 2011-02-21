@@ -1,13 +1,13 @@
 
-(ns mmm.sm
-  "Structure mapping functionality.
+(ns sme-clj.core
+  "Structure mapping engine core functionality.
 
   Reimplements SME for the most part, but in nice Clojure instead of Common Lisp
-  spaghetti. Differs in some areas, such as GMap merging and scoring. Also
-  likely to be slower, as it has not been profiled or optimised at all."
+  spaghetti. There are more objective differences in some areas, such as GMap
+  merging and scoring. Also likely to be slower, as it has not been profiled or
+  optimised at all." ;; TODO: expand with more detail on diffs
   (:require [clojure.set :as set]
             [clojure.contrib.set :as c.set]
-            [clojure.contrib.logging :as log]
             [clojure.contrib.combinatorics :as comb])
   (:use mmm.sm.typedef
         mmm.sm.ruledef))
@@ -15,6 +15,8 @@
 ;;;;
 ;;;; GENERATING MATCH HYPOTHESES
 ;;;;
+
+;; Note: "mh" = match hypothesis
 
 (defn apply-filter-rules
   "Apply :filter rules from a ruleset to the base and target expressions. Return
@@ -71,8 +73,8 @@
                        {:base {}, :target {}}
                        mhs)
         {bmap :base, tmap :target} smap]
-    (reduce (fn build-mh-structure [s mh]
-              (assoc s
+    (reduce (fn build-mh-structure [structure mh]
+              (assoc structure
                 mh
 
                 ;; initial emaps is just ourselves if we are one, for the rest
@@ -198,14 +200,13 @@
   [gmap-set]
   (gmap-sets-consistent? gmap-set gmap-set))
 
-;; NOTE: SME's second merge step seems rather complex compared to its benefits,
-;; and will be covered in a more exhaustive third step than SME performs that
-;; we will be performing. Hence we skip merge step 2.
+;; NOTE: SME's second merge step seems rather complex compared to its benefits.
+;; Its results will already be generated in a third step we will be performing
+;; that is more exhaustive than SME performs at that point. Therefore step 2 is
+;; unnecessary here and we skip it.
 
 
-;; The below is a very naive implementation, performance-wise. Not necessarily a
-;; problem because the set of gmaps is very likely to be small in the TCG
-;; setting. In fact there will often only be one.
+;; The below is a very naive implementation, performance-wise.
 (defn combine-gmaps
   "Combine all gmaps in all maximal, consistent ways."
   [data]
@@ -257,8 +258,8 @@
                      (vals a)
                      (vals b))))))
 
-;; :shape key is an implementation detail, should not be taken into account for
-;; matching
+;; Entities may have keys that are implementation details. Bind this var to a
+;; seq of those keys to ignore them in emap matching.
 (def unmatched-keys [:shape])
 
 (defn matching-emaps
@@ -271,7 +272,8 @@
           mhs))
 
 (defn score-gmap
-  "Computes SES and emap scores for a gmap."
+  "Computes SES and emap scores for a gmap. The emap score is not in the
+  original SME. It simply counts how many entities match in their content."
   [{:keys [mh-structure] :as data} gm]
   (letfn [(score-mh [mh depth]
             ;; simplified trickle-down SES
@@ -317,6 +319,9 @@
 ;; target graph.
 
 
+;; Note that the behaviour of the original SME that concerns the creation of
+;; "skolem" entities when transfering inferences is not implemented.
+
 (defn transfer-gmap-inferences
   "Attempt to transfer inferences to the target of the gmap."
   [{:as gmap,
@@ -357,12 +362,10 @@
 
    (assoc data :gmaps)))
 
-(declare printgm)
-
 (defn match
   "Attempts to find a structure mapping between base and target using an
-  SME-like algorithm. Returns a collection of GMaps, which represent analogical
-  mappings."
+  implementation of the SME algorithm. Returns a collection of GMaps, which
+  represent analogical mappings."
   ([base target rules]
      (-> (create-match-hypotheses base target rules)
          build-hypothesis-structure
@@ -379,48 +382,4 @@
      (match base target literal-similarity)))
 
 
-
-;;;;
-;;;; DEBUG HELPERS
-;;;;
-
-(defn printmh
-  [mh]
-  (letfn [(getname [m]
-            (doall (map #(if-let [n (:name %)]
-                           n
-                           (type %))
-                        (if (expression? m)
-                          (cons (:functor m) (:args m))
-                          (list m)))))]
-    (when mh (vector :b (getname (:base mh))
-                     :t (getname (:target mh))))))
-
-(defn printdbg
-  [structure]
-  (doseq [mh (keys structure)]
-    (println "MH:  \t" (printmh mh))
-    (println "NoGood:\t" (map printmh (:nogood (get structure mh))))
-    (println "Emaps:\t" (map printmh (:emaps (get structure mh))))
-    (println "Kids:\t" (map printmh (:children (get structure mh))))
-    (println)))
-
-(defn printgm
-  [gmaps]
-  (doseq [gm gmaps]
-    (println "gmap:")
-    (println "  score        = " (:score gm))
-    (println "  emap-matches = " (:emap-matches gm))
-    (println)
-    (doseq [mh (:mhs gm)]
-      (println (printmh mh)))
-    (when (seq (:inferences gm))
-      (println "\n  cand.infs: ")
-      (doseq [inf (:inferences gm)]
-        (println inf)))
-    (when (seq (:transferred gm))
-      (println "\n  trnf.infs: ")
-      (doseq [inf (:transferred gm)]
-        (println inf)))
-    (println "\n----\n")))
 
