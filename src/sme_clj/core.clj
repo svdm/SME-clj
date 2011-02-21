@@ -9,8 +9,8 @@
   (:require [clojure.set :as set]
             [clojure.contrib.set :as c.set]
             [clojure.contrib.combinatorics :as comb])
-  (:use mmm.sm.typedef
-        mmm.sm.ruledef))
+  (:use sme-clj.typedef
+        sme-clj.ruledef))
 
 ;;;;
 ;;;; GENERATING MATCH HYPOTHESES
