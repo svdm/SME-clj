@@ -1,11 +1,12 @@
 
-(ns mmm.sm.typedef
-  "Data type definitions used throughout the code."
-  (:use [mmm.util :only [defmake]]))
+(ns sme-clj.typedef
+  "Data type definitions and protocols for SME, as well as facilities to create
+   instances of types and manipulate them."
+  (:use [sme-clj.util :only [defmake]]))
 
 ;;; ENTITY AND PREDICATE
 
-;; Only used to identify Entities defined with defentity
+;; Only used to identify Entities defined with defentity, ie. a marker interface
 (defprotocol AEntity
   (entity? [_]))
 
@@ -29,7 +30,6 @@
   (function? [this] "Is this a :function Predicate?")
   (attribute? [this] "Is this an :attribute Predicate?"))
 
-;; TODO: move 'name to string instead of keyword
 (defrecord Predicate
   [name ptype arity ordered?]
 
@@ -42,9 +42,8 @@
   (title-for-node [this]
     (clojure.core/name name)))
 
-(defmacro is-type? [x t] `(isa? (type ~x) ~t))
+(defmacro is-type? [x t] `(isa? (type ~x) ~t)) ;; TODO: move into util.clj
 
-;;(defn entity?    [x] (extends? AEntity (type x)))
 (defn predicate? [x] (is-type? x Predicate))
 
 
