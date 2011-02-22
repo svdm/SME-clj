@@ -55,6 +55,8 @@
 ;;
 ;; An Expression's id is not guaranteed to be related to any implicit ordering
 ;; of the expressions within a graph, but in practice often is.
+
+
 (defprotocol AExpression
   (expression-functor [this] "Returns this expression's functor.")
   (expression-args    [this] "Returns this expression's arguments."))
@@ -116,6 +118,25 @@
   clauses to a graph."
   [expr]
   (filter expression? (tree-seq expression? expression-args expr)))
+
+(defmacro make-concept-graph
+  "Helper macro for defining a concept graph. The symbol given as 'expsym will
+  be let-bound to a function that creates an Expression out of a given functor +
+  arguments. It is followed by one or more forms that define expressions using
+  that function.
+
+  Ex.:
+    (make-concept-graph \"example\" expr
+      (expr predicate-foo entity-a entity-b)
+      (expr predicate-bar (expr predicate-baz entity-c) entity-d))"
+  [name expsym & spec]
+  `(let [id-state# (atom -1)
+         id# (fn [] (swap! id-state# inc))
+         ~expsym  (fn [f# & a#] (make-expr (id#) f# (vec a#)))]
+     (make-ConceptGraph ~name
+                        (doall (mapcat unfold-expression [~@spec]))
+                        (quote ~spec)
+                        (deref id-state#))))
 
 ;;; MATCH HYPOTHESIS
 
