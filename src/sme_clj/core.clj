@@ -368,7 +368,24 @@
 (defn match
   "Attempts to find a structure mapping between base and target using an
   implementation of the SME algorithm. Returns a collection of GMaps, which
-  represent analogical mappings."
+  represent analogical mappings.
+
+  Keys available in returned GMaps:
+    :mhs        Collection of match hypotheses that form the GMap.
+
+    :structure  Map from each MH to a map with structural information about it.
+                Keys: :emaps, :nogoods, :children.
+
+    :mapping    Original structures that were mapped, :base and :target.
+
+    :score      Structural evaluation score (SES), simple implementation.
+
+    :inferences   Maximal set of potential inferences.
+
+    :transferred  Inferences transferred to target, ready to be added into the
+                  target's concept graph.
+
+  For example: (map :score (match b t)) -> seq of gmap scores."
   ([base target rules]
      (-> (create-match-hypotheses base target rules)
          build-hypothesis-structure
