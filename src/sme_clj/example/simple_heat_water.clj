@@ -1,11 +1,11 @@
 
 (ns sme-clj.example.simple-heat-water
   "Example adapted from SME literature [1], of an analogy between the flow of
-   water from a large beaker through a pipe to a small vial, and the flow of
-   heat from a cup of coffee through a bar into an ice cube.
+  water from a large beaker through a pipe to a small vial, and the flow of
+  heat from a cup of coffee through a bar into an ice cube.
 
-   This is the running example Falkenhainer et al. use in their description of
-   the SME algorithm.
+  This is the running example Falkenhainer et al. use in their description of
+  the SME algorithm.
 
     [1] Falkenhainer, Forbus & Gentner (1989). The structure-mapping engine:
           algorithm and examples. Artificial Intelligence, 41, 1-62.
