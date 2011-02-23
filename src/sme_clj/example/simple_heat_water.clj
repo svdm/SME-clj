@@ -1,6 +1,20 @@
 
 (ns sme-clj.example.simple-heat-water
-  (:use sme-clj.typedef))
+  "Example adapted from SME literature [1], of an analogy between the flow of
+   water from a large beaker through a pipe to a small vial, and the flow of
+   heat from a cup of coffee through a bar into an ice cube.
+
+   This is the running example Falkenhainer et al. use in their description of
+   the SME algorithm.
+
+    [1] Falkenhainer, Forbus & Gentner (1989). The structure-mapping engine:
+          algorithm and examples. Artificial Intelligence, 41, 1-62.
+  "
+  (:use sme-clj.typedef)
+  (:require [sme-clj.core   :as sme]
+            [clojure.pprint :as pp]))
+
+;; Predicate definitions
 
 (defpredicate flow
   :type :relation
@@ -32,7 +46,8 @@
 (defpredicate clear
   :type :attribute)
 
-(defentity Coffee [])
+;; Entities
+(defentity Coffee []) ; [] -> no value slots in entity
 (defentity Icecube [])
 (defentity Bar [])
 (defentity Heat [])
@@ -43,8 +58,7 @@
 (defentity Pipe [])
 
 
-;; TODO:
-;; - document this example a bit, refer to falkenhainer
+;; Concept graph definitions
 
 (def simple-heat-flow
   (make-concept-graph "simple heat flow" e
@@ -64,3 +78,18 @@
                       (e clear Beaker)
                       (e flat-top Water)
                       (e liquid Water)))
+
+;; Commented out example
+#_(do
+    ;; Water flow is the base, heat flow the target
+    (def result (sme/match simple-water-flow simple-heat-flow))
+    (def gmaps (:gmaps result))
+
+    ;; Should show the cause relation between the greater temperature
+    ;; relation and the heat flow relation. This relation has been inferred
+    ;; based on the analogical cause relation in the water flow graph.
+    (pp/write (:transferred (first gmaps)) :suppress-namespaces true)
+
+    ;; For other keys like :transferred that are stored in a gmap and might be
+    ;; interesting to examine, see the docstring for 'sme-clj.core/match
+    )
