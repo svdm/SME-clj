@@ -45,12 +45,11 @@
 
 ;; TODO:
 ;; - document this example a bit, refer to falkenhainer
-;;   - match gives three gmaps, third one is the correct one IIRC
 
 (def simple-heat-flow
   (make-concept-graph "simple heat flow" e
 
-                      (e flow Coffee Icecube Bar Heat)
+                      (e flow Coffee Icecube Heat Bar)
                       (e greater (e temperature Coffee) (e temperature Icecube))
                       (e flat-top Coffee)
                       (e liquid Coffee)))
