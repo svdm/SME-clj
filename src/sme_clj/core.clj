@@ -19,9 +19,20 @@
       in a belief maintenance system as in [1]. Instead, GMaps are scored on
       structure using a trickle-down algorithm that rewards large structures.
 
+  The basic usage is as follows:
+     1. Define predicates, entities, and concept graphs using 'sme-clj.typedef.
+     2. Run 'sme-clj.core/match with the base and target graphs as arguments.
+     3. The 'match function returns the resulting GMaps.
+
+  See the 'match docstring for more.
+  Also look at the example in the sme-clj.example namespace.
+
+  If you are not yet familiar with the general structure and terminology of the
+  original SME algorithm, it will be hard to understand this stuff, so I would
+  advise you read [1] first.
+
     [1] Falkenhainer, B., Forbus, K. & Gentner, D. (1989). The structure-mapping
-          engine: algorithm and examples. Artificial Intelligence, 41, 1-62.
-"
+          engine: algorithm and examples. Artificial Intelligence, 41, 1-62."
   (:require [clojure.set :as set]
             [clojure.contrib.set :as c.set]
             [clojure.contrib.combinatorics :as comb])
