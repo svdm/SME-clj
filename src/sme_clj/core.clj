@@ -2,10 +2,26 @@
 (ns sme-clj.core
   "Structure mapping engine core functionality.
 
-  Reimplements SME for the most part, but in nice Clojure instead of Common Lisp
-  spaghetti. There are more objective differences in some areas, such as GMap
-  merging and scoring. Also likely to be slower, as it has not been profiled or
-  optimised at all." ;; TODO: expand with more detail on diffs
+  Reimplements SME (as described in [1]) for the most part, in Clojure instead
+  of (rather ancient and difficult to read) Common Lisp. There are some
+  differences in certain areas, such as GMap merging and scoring. It is also
+  likely to be slower, as it has not been profiled or optimised at all.
+
+  The main differences:
+    - GMap merging differs in two of the steps, but results should be more
+      complete than the original algorithm, if they differ at all.
+
+    - Inference generation has some limitations, and has not received as much
+      development and testing as other areas (as it was not used in the research
+      for which this SME implementation was developed).
+
+    - Scoring of GMaps is much simpler. It does not use complex evidence rules
+      in a belief maintenance system as in [1]. Instead, GMaps are scored on
+      structure using a trickle-down algorithm that rewards large structures.
+
+    [1] Falkenhainer, B., Forbus, K. & Gentner, D. (1989). The structure-mapping
+          engine: algorithm and examples. Artificial Intelligence, 41, 1-62.
+"
   (:require [clojure.set :as set]
             [clojure.contrib.set :as c.set]
             [clojure.contrib.combinatorics :as comb])
@@ -372,9 +388,8 @@
     :mh-structure All MHs created for the mapping.
 
     :gmaps        Collection of GMaps, which represent analogical mappings.
-                  Fundamentally a GMap is a group of consistent MHs.
 
-  Keys available in returned GMaps:
+  Keys available in the returned GMaps:
     :mhs          Collection of match hypotheses that form the GMap.
 
     :structure    Map from each MH to a map with structural information.
@@ -403,6 +418,3 @@
          ))
   ([base target]
      (match base target literal-similarity)))
-
-
-
